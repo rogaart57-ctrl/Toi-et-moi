@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Toi & Moi ❤️</title>
+
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #ff758c, #ff7eb3);
+      color: white;
+      text-align: center;
+    }
+
+    .card {
+      width: 85%;
+      max-width: 420px;
+      padding: 35px 20px;
+      border-radius: 25px;
+      background: rgba(255,255,255,0.18);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    h1 {
+      font-size: 42px;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 18px;
+      line-height: 1.5;
+    }
+
+    button {
+      border: none;
+      padding: 15px 25px;
+      margin-top: 20px;
+      border-radius: 30px;
+      font-size: 17px;
+      cursor: pointer;
+      background: white;
+      color: #ff4f70;
+      font-weight: bold;
+    }
+
+    #message {
+      display: none;
+      margin-top: 25px;
+      font-size: 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="card">
+    <h1>Toi ❤️ Moi</h1>
+
+    <p>
+      Un petit endroit rien que pour nous deux.
+    </p>
+
+    <button onclick="showMessage()">
+      Clique ici 💕
+    </button>
+
+    <div id="message">
+      Peu importe où la vie nous emmène,
+      j'aime les moments que nous partageons. ❤️
+    </div>
+  </div>
+
+  <script>
+    function showMessage() {
+      document.getElementById("message").style.display = "block";
+    }
+  </script>
+
+</body>
+</html>
