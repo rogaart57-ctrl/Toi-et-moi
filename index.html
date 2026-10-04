@@ -1,87 +1,123 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Toi & Moi ❤️</title>
-
-  <style>
-    body {
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #ff758c, #ff7eb3);
-      color: white;
-      text-align: center;
-    }
-
-    .card {
-      width: 85%;
-      max-width: 420px;
-      padding: 35px 20px;
-      border-radius: 25px;
-      background: rgba(255,255,255,0.18);
-      backdrop-filter: blur(10px);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    }
-
-    h1 {
-      font-size: 42px;
-      margin-bottom: 10px;
-    }
-
-    p {
-      font-size: 18px;
-      line-height: 1.5;
-    }
-
-    button {
-      border: none;
-      padding: 15px 25px;
-      margin-top: 20px;
-      border-radius: 30px;
-      font-size: 17px;
-      cursor: pointer;
-      background: white;
-      color: #ff4f70;
-      font-weight: bold;
-    }
-
-    #message {
-      display: none;
-      margin-top: 25px;
-      font-size: 20px;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Toi & Moi ❤️</title>
+<style>
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+  color: white;
+  text-align: center;
+  background: linear-gradient(135deg, #ff416c, #ff4b2b);
+  overflow-x: hidden;
+}
+.container {
+  max-width: 500px;
+  margin: auto;
+  padding: 35px 20px;
+}
+.heart {
+  font-size: 70px;
+  animation: beat 1.2s infinite;
+}
+@keyframes beat {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+h1 {
+  font-size: 45px;
+  margin: 10px 0;
+}
+.subtitle {
+  font-size: 18px;
+  opacity: 0.9;
+  margin-bottom: 30px;
+}
+.card {
+  background: rgba(255,255,255,0.18);
+  padding: 25px;
+  border-radius: 25px;
+  margin: 20px 0;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+button {
+  width: 90%;
+  padding: 15px;
+  margin: 8px;
+  border: none;
+  border-radius: 30px;
+  background: white;
+  color: #ff416c;
+  font-size: 17px;
+  font-weight: bold;
+}
+button:active {
+  transform: scale(0.96);
+}
+.hidden {
+  display: none;
+}
+.message {
+  font-size: 19px;
+  line-height: 1.6;
+  margin-top: 20px;
+}
+.footer {
+  margin-top: 35px;
+  font-size: 14px;
+  opacity: 0.8;
+}
+</style>
 </head>
-
 <body>
-
+<div class="container">
+  <div class="heart">❤️</div>
+  <h1>Toi & Moi</h1>
+  <div class="subtitle">
+    Un petit monde qui n'appartient qu'à nous deux ✨
+  </div>
   <div class="card">
-    <h1>Toi ❤️ Moi</h1>
-
-    <p>
-      Un petit endroit rien que pour nous deux.
-    </p>
-
-    <button onclick="showMessage()">
-      Clique ici 💕
+    <h2>💌 Un message pour toi</h2>
+    <button onclick="message()">
+      Ouvrir le message ❤️
     </button>
-
-    <div id="message">
-      Peu importe où la vie nous emmène,
-      j'aime les moments que nous partageons. ❤️
+    <div id="message" class="message hidden">
+      Peu importe le nombre de personnes autour de nous,
+      certaines connexions restent simplement uniques. ❤️
+      <br><br>
+      Et celle-ci est la nôtre.
     </div>
   </div>
-
-  <script>
-    function showMessage() {
-      document.getElementById("message").style.display = "block";
-    }
-  </script>
-
+  <div class="card">
+    <h2>🎮 Notre petit monde</h2>
+    <button onclick="comingSoon()">
+      Jouons ensemble 🎮
+    </button>
+    <button onclick="comingSoon()">
+      Quiz amoureux 💕
+    </button>
+    <button onclick="comingSoon()">
+      Notre espace secret 🔐
+    </button>
+  </div>
+  <div class="footer">
+    Créé spécialement pour Toi & Moi ❤️
+  </div>
+</div>
+<script>
+function message() {
+  document.getElementById("message").classList.toggle("hidden");
+}
+function comingSoon() {
+  alert("Cette partie arrive bientôt ❤️");
+}
+</script>
 </body>
 </html>
