@@ -55,7 +55,7 @@ input{width:100%;padding:12px;border-radius:12px;border:1px solid var(--bd);back
   <div class="row"><input id="cd" placeholder="Code du salon" maxlength="8"><button class="b o" id="jn">Rejoindre</button></div>
   <div id="lk" class="mut"></div></div>
 </div>
-<div class="p" id="p-chat"><div class="msgs" id="msgs"></div>
+<div class="p" id="p-chat"><div id="inv" class="cd c" style="display:none"></div><div class="msgs" id="msgs"></div>
   <div class="row"><input id="tx" placeholder="Écris un message…" maxlength="500"><button class="b" id="send">Envoyer</button></div></div>
 <div class="p" id="p-pref"></div>
 <div class="p" id="p-pendu"></div>
@@ -73,7 +73,7 @@ input{width:100%;padding:12px;border-radius:12px;border:1px solid var(--bd);back
 <script>
 var $=function(i){return document.getElementById(i)};
 var esc=function(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
-var peer,conn,seat=0,myName="",otherName="L’autre";
+var peer,conn,tmr,seat=0,otherName="L’autre";
 var QS=[["la mer","la montagne"],["un film à la maison","une sortie au ciné"],["sucré","salé"],["voyager loin","rester chez nous"],["le matin","le soir"],["un câlin","un baiser"],["un dîner aux chandelles","un pique-nique"],["l’été","l’hiver"],["des messages toute la journée","des appels longs le soir"],["cuisiner ensemble","commander"],["danser","chanter"],["un chat","un chien"],["une surprise","un plan prévu"],["le café","le thé"],["un week-end nature","un week-end ville"]];
 
 /* Navigation */
@@ -82,58 +82,80 @@ function show(t){[].forEach.call(document.querySelectorAll("nav button"),functio
   [].forEach.call(document.querySelectorAll(".p"),function(p){p.classList.toggle("on",p.id==="p-"+t)})}
 function send(o){if(conn&&conn.open)conn.send(o)}
 
-/* Connexion */
-function code(){var a="abcdefghjkmnpqrstuvwxyz23456789",s="";for(var i=0;i<5;i++)s+=a[Math.floor(Math.random()*a.length)];return s}
-function link(c){return location.href.split("?")[0].split("#")[0]+"?salon="+c}
+/* Sauvegarde locale (chat, scores, parties) */
+var D={uid:"u"+Math.random().toString(36).slice(2,10),partner:"",pn:"",room:"",name:"",chat:[],S:{pendu:{},mot:{},nav:{},pref:0}};
+try{var sv=JSON.parse(localStorage.getItem("tm2")||"null");if(sv)D=Object.assign(D,sv)}catch(e){}
+function save(){try{D.W=W;D.P=P;D.NV=NV;localStorage.setItem("tm2",JSON.stringify(D))}catch(e){}}
+function sk(){return D.partner?(D.uid<D.partner?0:1):0}
+function uidOf(x){return x===seat?D.uid:D.partner}
+function addScore(g,u){D.S[g][u]=(D.S[g][u]||0)+1;send({t:"sc",S:D.S});save()}
+function sline(g){if(g==="pref")return"♥ Accords : "+(D.S.pref||0);return"🏆 "+esc(D.name)+" "+(D.S[g][D.uid]||0)+" · "+esc(otherName)+" "+(D.S[g][D.partner]||0)}
+
+/* Connexion permanente : le premier arrivé attend, l'autre le rejoint */
+function code(){var a="abcdefghjkmnpqrstuvwxyz23456789",s="";for(var i=0;i<6;i++)s+=a[Math.floor(Math.random()*a.length)];return s}
+function setSt(t){$("st").textContent=t}
+function retry(){clearTimeout(tmr);tmr=setTimeout(begin,5000)}
+function begin(){clearTimeout(tmr);if(conn&&conn.open)return;try{peer&&peer.destroy()}catch(e){}
+  setSt("En attente de l’autre…");peer=new Peer("tm-"+D.room);
+  peer.on("connection",function(c){if(conn&&conn.open){c.close();return}setup(c)});
+  peer.on("error",function(e){
+    if(e.type==="unavailable-id"){try{peer.destroy()}catch(x){}peer=new Peer();
+      peer.on("open",function(){setup(peer.connect("tm-"+D.room,{reliable:true}))});
+      peer.on("error",function(){retry()})}
+    else retry()})}
 function setup(c){conn=c;
-  c.on("open",function(){$("st").textContent="Connectés ♥";$("nav").style.display="flex";show("chat");send({t:"name",n:myName});renders()});
-  c.on("data",onData);
-  c.on("close",function(){$("st").textContent="Déconnecté — recharge la page";});
-}
-function name(){myName=$("nom").value.trim()||"Moi"}
-$("mk").onclick=function(){name();var c=code();seat=0;$("st").textContent="Salon créé, en attente…";
-  peer=new Peer("tm-"+c);peer.on("connection",setup);peer.on("error",function(e){$("lk").textContent="Erreur : "+e.type});
-  var l=link(c);
-  $("lk").innerHTML="<p>Envoie ce lien à l’autre personne et reste sur cette page :</p><p><b>"+esc(l)+"</b></p><button class='b' id='sh'>Partager le lien</button>";
-  $("sh").onclick=function(){if(navigator.share)navigator.share({title:"Toi & Moi",url:l});else if(navigator.clipboard){navigator.clipboard.writeText(l);this.textContent="Lien copié ✓"}}};
-function join(c){name();seat=1;$("st").textContent="Connexion…";peer=new Peer();
-  peer.on("open",function(){setup(peer.connect("tm-"+c.toLowerCase().trim()))});
-  peer.on("error",function(e){$("st").textContent="Impossible de se connecter ("+e.type+"). Vérifie que l’autre est bien sur la page.";});}
-$("jn").onclick=function(){if($("cd").value)join($("cd").value)};
-var q=new URLSearchParams(location.search).get("salon");
-if(q){$("cd").value=q;$("jn").textContent="Rejoindre le salon";}
+  c.on("open",function(){setSt("Connectés ♥");c.send({t:"hello",uid:D.uid,n:D.name})});
+  c.on("data",onData);c.on("error",function(){});
+  c.on("close",function(){conn=null;setSt("L’autre est parti… en attente");retry()});
+  setTimeout(function(){if(!c.open){try{c.close()}catch(e){}if(conn===c)conn=null;retry()}},10000)}
+function showInv(){var e=$("inv");if(D.partner){e.style.display="none";return}
+  var l=location.href.split("?")[0].split("#")[0]+"?salon="+D.room;e.style.display="block";
+  e.innerHTML="<p>Envoie ce lien à l’autre personne (une seule fois) :</p><p><b>"+esc(l)+"</b></p><button class='b' id='sh'>Partager le lien</button>";
+  $("sh").onclick=function(){if(navigator.share)navigator.share({title:"Toi & Moi",url:l});else if(navigator.clipboard){navigator.clipboard.writeText(l);this.textContent="Lien copié ✓"}}}
+function startApp(){save();$("nav").style.display="flex";show("chat");showInv();renderChat();renders();begin()}
+$("mk").onclick=function(){D.name=$("nom").value.trim()||"Moi";D.room=code();startApp()};
+$("jn").onclick=function(){if(!$("cd").value.trim())return;D.name=$("nom").value.trim()||"Moi";D.room=$("cd").value.toLowerCase().trim();startApp()};
 
 function onData(d){
-  if(d.t==="name"){otherName=d.n||"L’autre";return}
-  if(d.t==="chat"){addMsg(otherName,d.x,false);return}
+  if(d.t==="hello"){otherName=d.n||"L’autre";D.pn=otherName;
+    if(!D.partner){D.partner=d.uid;seat=sk();W={pendu:{setter:0,word:"",g:[],v:0},mot:{setter:0,word:"",g:[],v:0}};P={i:0,a:[null,null],v:0};nvReset()}
+    else if(D.partner!==d.uid)return;
+    showInv();send({t:"sync",chat:D.chat.slice(-300),S:D.S,W:W,P:P});renders();renderChat();save();return}
+  if(d.t==="sync"){merge(d);renders();renderChat();save();return}
+  if(d.t==="chat"){if(!D.chat.some(function(m){return m.id===d.m.id})){D.chat.push(d.m);save();renderChat()}return}
+  if(d.t==="sc"){mergeS(d.S);renders();save();return}
   if(d.t==="pref"){P=d.s;rPref();return}
   if(d.t==="w"){W[d.m]=d.s;rWord(d.m);return}
-  if(d.t==="nv")nvMsg(d);
-}
+  if(d.t==="nv")nvMsg(d)}
+function mergeS(r){["pendu","mot","nav"].forEach(function(g){var b=(r||{})[g]||{};for(var k in b)D.S[g][k]=Math.max(D.S[g][k]||0,b[k])});D.S.pref=Math.max(D.S.pref||0,(r||{}).pref||0)}
+function merge(r){var ids={};D.chat.forEach(function(m){ids[m.id]=1});(r.chat||[]).forEach(function(m){if(!ids[m.id])D.chat.push(m)});
+  D.chat.sort(function(a,b){return a.t-b.t});D.chat=D.chat.slice(-500);mergeS(r.S);
+  ["pendu","mot"].forEach(function(m){if(r.W&&r.W[m]&&(r.W[m].v||0)>(W[m].v||0))W[m]=r.W[m]});if(r.P&&(r.P.v||0)>(P.v||0))P=r.P}
 function renders(){rPref();rWord("pendu");rWord("mot");rNv()}
 
-/* Chat */
-function addMsg(n,x,me){var m=document.createElement("div");m.className="m"+(me?" me":"");m.innerHTML="<small>"+esc(n)+"</small>"+esc(x);$("msgs").appendChild(m);m.scrollIntoView()}
-function sendChat(){var x=$("tx").value.trim();if(!x)return;$("tx").value="";addMsg(myName,x,true);send({t:"chat",x:x})}
+/* Chat sauvegardé */
+function renderChat(){$("msgs").innerHTML=D.chat.slice(-200).map(function(m){return'<div class="m'+(m.u===D.uid?" me":"")+'"><small>'+esc(m.n||"?")+"</small>"+esc(m.x)+"</div>"}).join("");var l=$("msgs").lastChild;if(l)l.scrollIntoView()}
+function sendChat(){var x=$("tx").value.trim();if(!x)return;$("tx").value="";var m={id:D.uid+Date.now(),u:D.uid,n:D.name,x:x,t:Date.now()};D.chat.push(m);save();renderChat();send({t:"chat",m:m})}
 $("send").onclick=sendChat;$("tx").onkeydown=function(e){if(e.key==="Enter")sendChat()};
 
 /* Tu préfères */
 var P={i:0,a:[null,null]};
-function rPref(){var qq=QS[P.i],both=P.a[0]!==null&&P.a[1]!==null,h='<div class="cd c"><div class="mut">Tu préfères…</div>';
+function rPref(){var qq=QS[P.i],both=P.a[0]!==null&&P.a[1]!==null,h='<div class="cd c"><div class="mut">'+sline("pref")+'</div><div class="mut">Tu préfères…</div>';
   qq.forEach(function(o,k){var on=P.a[seat]===k;var who="";
     if(both)who=" "+[0,1].filter(function(s){return P.a[s]===k}).map(function(s){return s===seat?"(moi)":"("+esc(otherName)+")"}).join(" ");
     h+='<button class="opt'+(on?" on":"")+'" data-k="'+k+'">'+esc(o)+who+"</button>"});
   h+='<p class="mut">'+(both?(P.a[0]===P.a[1]?"Vous êtes d’accord ♥":"Pas du même avis, discutez-en 😄"):(P.a[seat]!==null?"En attente de l’autre…":"Choisis !"))+'</p>';
-  h+='<button class="b" id="pn">Question suivante</button></div>';$("p-pref").innerHTML=h;
-  [].forEach.call($("p-pref").querySelectorAll(".opt"),function(b){b.onclick=function(){if(P.a[seat]!==null)return;P.a[seat]=+b.dataset.k;send({t:"pref",s:P});rPref()}});
-  $("pn").onclick=function(){P={i:Math.floor(Math.random()*QS.length),a:[null,null]};send({t:"pref",s:P});rPref()}}
+  h+='<button class="b" id="pn">Question suivante</button></div>';$("p-pref").innerHTML=h;save();
+  [].forEach.call($("p-pref").querySelectorAll(".opt"),function(b){b.onclick=function(){if(P.a[seat]!==null)return;P.a[seat]=+b.dataset.k;P.v=(P.v||0)+1;if(P.a[0]!==null&&P.a[1]!==null&&P.a[0]===P.a[1]){D.S.pref=(D.S.pref||0)+1;send({t:"sc",S:D.S})}send({t:"pref",s:P});rPref()}});
+  $("pn").onclick=function(){P={i:Math.floor(Math.random()*QS.length),a:[null,null],v:(P.v||0)+1};send({t:"pref",s:P});rPref()}}
 
 /* Pendu et Mot mystère */
 var W={pendu:{setter:0,word:"",g:[]},mot:{setter:0,word:"",g:[]}};
 function norm(s){return s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z]/g,"")}
-function up(m,s){W[m]=s;send({t:"w",m:m,s:s});rWord(m)}
+function endW(m,s){if(m==="pendu"){var wr=s.g.filter(function(l){return s.word.indexOf(l)<0}).length;if(Array.from(s.word).every(function(c){return s.g.indexOf(c)>=0}))return"g";if(wr>=7)return"s"}else{if(s.g.length&&s.g[s.g.length-1]===s.word)return"g";if(s.g.length>=6)return"s"}return""}
+function up(m,s){s.v=(W[m].v||0)+1;if(s.word&&!s.sc){var r=endW(m,s);if(r){s.sc=1;addScore(m,r==="g"?uidOf(1-s.setter):uidOf(s.setter))}}W[m]=s;send({t:"w",m:m,s:s});rWord(m)}
 function rWord(m){var s=W[m],el=$("p-"+m),setter=s.setter===seat,len=m==="mot"?5:3,h='<div class="cd">';
-  h+='<div class="mut c">'+(m==="pendu"?"Pendu à deux":"Mot mystère (5 lettres)")+" · "+(setter?"tu choisis le mot":esc(otherName)+" choisit le mot")+"</div>";
+  h+='<div class="mut c">'+(m==="pendu"?"Pendu à deux":"Mot mystère (5 lettres)")+" · "+(setter?"tu choisis le mot":esc(otherName)+" choisit le mot")+"</div><div class=\"mut c\">"+sline(m)+"</div>";
   if(!s.word){
     if(setter)h+='<p class="c">Écris un mot'+(m==="mot"?" de 5 lettres":"")+' à faire deviner :</p><div class="row"><input id="w-'+m+'" placeholder="Ton mot secret" autocapitalize="off"><button class="b" id="ws-'+m+'">Valider</button></div>';
     else h+='<p class="big mut">En attente du mot…</p>';
@@ -152,7 +174,7 @@ function rWord(m){var s=W[m],el=$("p-"+m),setter=s.setter===seat,len=m==="mot"?5
     else if(!setter)h+='<div class="row"><input id="gs" maxlength="5" placeholder="Ton essai (5 lettres)" autocapitalize="off"><button class="b" id="gg">OK</button></div>';
     else h+='<p class="c mut">Il/elle cherche…</p>';
   }
-  h+='<p class="c"><button class="b o" id="wr-'+m+'">Nouvelle manche (échanger les rôles)</button></p></div>';el.innerHTML=h;
+  h+='<p class="c"><button class="b o" id="wr-'+m+'">Nouvelle manche (échanger les rôles)</button></p></div>';el.innerHTML=h;save();
   var wv=$("ws-"+m);if(wv)wv.onclick=function(){var w=norm($("w-"+m).value);if(w.length<(m==="mot"?5:3)||(m==="mot"&&w.length!==5))return alert(m==="mot"?"Exactement 5 lettres":"Au moins 3 lettres");up(m,{setter:s.setter,word:w,g:[]})};
   [].forEach.call(el.querySelectorAll(".kb button"),function(b){b.onclick=function(){up(m,{setter:s.setter,word:s.word,g:s.g.concat(b.dataset.l)})}});
   var gg=$("gg");if(gg)gg.onclick=function(){var w=norm($("gs").value);if(w.length!==5)return alert("5 lettres");up(m,{setter:s.setter,word:s.word,g:s.g.concat(w)})};
@@ -163,12 +185,12 @@ function cl(g,w){var r=["x","x","x","x","x"],u=Array.from(w);
 
 /* Bataille navale simplifiée : 6x6, 5 bateaux d'une case */
 var NV={ph:"place",my:[],ready:false,oready:false,turn:0,shots:{},got:{},hits:0,over:""};
-function rNv(){var h='<div class="cd c">',n=NV;
+function rNv(){var h='<div class="cd c"><div class="mut">'+sline("nav")+'</div>',n=NV;
   if(n.ph==="place"){h+='<p><b>Place tes 5 bateaux</b> ('+n.my.length+'/5)</p><div class="gr nv">'+cells(function(i){return n.my.indexOf(i)>=0?"s":""},"p")+"</div>";
     if(n.my.length===5&&!n.ready)h+='<button class="b" id="rd">Je suis prêt</button>';
     if(n.ready)h+='<p class="mut">En attente de l’autre…</p>'}
   else{h+='<p><b>'+(n.over?n.over:(n.turn===seat?"À toi de tirer ! 🎯":"Au tour de l’autre…"))+'</b></p><p class="mut">Mer de l’autre (touchés : '+n.hits+"/5)</p><div class=\"gr nv\">"+cells(function(i){var s=n.shots[i];return s===undefined?"":s?"h":"w"},"s")+'</div><p class="mut">Ta flotte</p><div class="gr nv">'+cells(function(i){var g=n.got[i];return g?(n.my.indexOf(i)>=0?"h":"w"):(n.my.indexOf(i)>=0?"s":"")},"x")+"</div>"}
-  h+='<p><button class="b o" id="nr">Recommencer</button></p></div>';$("p-nav").innerHTML=h;
+  h+='<p><button class="b o" id="nr">Recommencer</button></p></div>';$("p-nav").innerHTML=h;save();
   [].forEach.call($("p-nav").querySelectorAll("[data-p]"),function(b){b.onclick=function(){var i=+b.dataset.i,k=n.my.indexOf(i);if(n.ready)return;if(k>=0)n.my.splice(k,1);else if(n.my.length<5)n.my.push(i);rNv()}});
   [].forEach.call($("p-nav").querySelectorAll("[data-s]"),function(b){b.onclick=function(){var i=+b.dataset.i;if(n.over||n.turn!==seat||n.shots[i]!==undefined)return;n.pend=i;send({t:"nv",k:"shot",i:i})}});
   var rd=$("rd");if(rd)rd.onclick=function(){n.ready=true;send({t:"nv",k:"ready"});chk();rNv()};
@@ -181,8 +203,13 @@ function nvMsg(d){var n=NV;
   else if(d.k==="reset")nvReset();
   else if(d.k==="shot"){var hit=n.my.indexOf(d.i)>=0;n.got[d.i]=true;
     var lost=n.my.filter(function(x){return n.got[x]}).length>=5;send({t:"nv",k:"res",i:d.i,hit:hit,lost:lost});n.turn=seat;if(lost)n.over="Perdu… 😢";rNv()}
-  else if(d.k==="res"){n.shots[d.i]=d.hit;if(d.hit)n.hits++;if(d.lost)n.over="Gagné ! 🎉";else n.turn=1-seat;rNv()}}
-rPref();rNv();
+  else if(d.k==="res"){n.shots[d.i]=d.hit;if(d.hit)n.hits++;if(d.lost){n.over="Gagné ! 🎉";addScore("nav",D.uid)}else n.turn=1-seat;rNv()}}
+if(D.W)W=D.W;if(D.P)P=D.P;if(D.NV)NV=D.NV;
+["pendu","mot","nav"].forEach(function(g){D.S[g]=D.S[g]||{}});D.S.pref=D.S.pref||0;
+otherName=D.pn||"L’autre";seat=sk();$("nom").value=D.name||"";
+var q=new URLSearchParams(location.search).get("salon");
+if(q){$("cd").value=q;$("jn").textContent="Rejoindre le salon";if(D.name){D.room=q.toLowerCase();history.replaceState(null,"",location.pathname);startApp()}}
+else if(D.room&&D.name)startApp();
 </script>
 </body>
 </html>
