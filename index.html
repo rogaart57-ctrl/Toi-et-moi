@@ -1,123 +1,188 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Toi & Moi ❤️</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#c2185b">
+<title>Toi & Moi ♥</title>
 <style>
-* {
-  box-sizing: border-box;
-}
-body {
-  margin: 0;
-  min-height: 100vh;
-  font-family: Arial, sans-serif;
-  color: white;
-  text-align: center;
-  background: linear-gradient(135deg, #ff416c, #ff4b2b);
-  overflow-x: hidden;
-}
-.container {
-  max-width: 500px;
-  margin: auto;
-  padding: 35px 20px;
-}
-.heart {
-  font-size: 70px;
-  animation: beat 1.2s infinite;
-}
-@keyframes beat {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.2); }
-}
-h1 {
-  font-size: 45px;
-  margin: 10px 0;
-}
-.subtitle {
-  font-size: 18px;
-  opacity: 0.9;
-  margin-bottom: 30px;
-}
-.card {
-  background: rgba(255,255,255,0.18);
-  padding: 25px;
-  border-radius: 25px;
-  margin: 20px 0;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-}
-button {
-  width: 90%;
-  padding: 15px;
-  margin: 8px;
-  border: none;
-  border-radius: 30px;
-  background: white;
-  color: #ff416c;
-  font-size: 17px;
-  font-weight: bold;
-}
-button:active {
-  transform: scale(0.96);
-}
-.hidden {
-  display: none;
-}
-.message {
-  font-size: 19px;
-  line-height: 1.6;
-  margin-top: 20px;
-}
-.footer {
-  margin-top: 35px;
-  font-size: 14px;
-  opacity: 0.8;
-}
+:root{--bg:#fff3f6;--fg:#3a1220;--mut:#8a6471;--cd:#fff;--ac:#c2185b;--bd:#f3cad8;--me:#c2185b;--you:#f6e1e8;--ok:#2e9e5b;--ye:#d4a64a}
+@media (prefers-color-scheme:dark){:root{--bg:#1b0f15;--fg:#fbe9ef;--mut:#c9a2b0;--cd:#2a1620;--bd:#4a2636;--ac:#ff6b9d;--me:#a3164f;--you:#3a2230}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--fg);font:16px/1.5 -apple-system,system-ui,sans-serif;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px)}
+header{text-align:center;padding:10px;font:700 1.3rem Georgia,serif;color:var(--ac);border-bottom:1px solid var(--bd)}
+#st{font:.75rem system-ui;color:var(--mut)}
+main{flex:1;overflow-y:auto;padding:14px;max-width:600px;width:100%;margin:0 auto}
+nav{display:none;border-top:1px solid var(--bd);background:var(--cd);padding-bottom:env(safe-area-inset-bottom,0px)}
+nav button{flex:1;border:0;background:none;color:var(--mut);padding:8px 0;font-size:.68rem;cursor:pointer}
+nav button span{display:block;font-size:1.3rem}
+nav button.on{color:var(--ac);font-weight:700}
+.p{display:none}.p.on{display:block}
+input{width:100%;padding:12px;border-radius:12px;border:1px solid var(--bd);background:var(--cd);color:var(--fg);font:16px system-ui}
+.b{background:var(--ac);color:#fff;border:0;border-radius:12px;padding:12px 18px;min-height:46px;cursor:pointer;font:600 16px system-ui}
+.b.o{background:none;color:var(--ac);border:1.5px solid var(--ac)}
+.row{display:flex;gap:8px;margin:10px 0}
+.c{text-align:center}
+.mut{color:var(--mut)}
+.msgs{display:flex;flex-direction:column;gap:6px}
+.m{max-width:80%;padding:9px 13px;border-radius:18px;background:var(--you);word-wrap:break-word}
+.m.me{align-self:flex-end;background:var(--me);color:#fff}
+.m small{display:block;opacity:.65;font-size:.7rem}
+.cd{background:var(--cd);border:1px solid var(--bd);border-radius:16px;padding:16px;margin:10px 0}
+.big{font-size:1.3rem;margin:14px 0;text-align:center}
+.kb{display:flex;flex-wrap:wrap;gap:5px;justify-content:center}
+.kb button{width:34px;height:42px;border-radius:8px;border:1px solid var(--bd);background:var(--cd);color:var(--fg);font:600 15px system-ui;text-transform:uppercase}
+.kb button:disabled{opacity:.3}
+.wd{font:700 2rem monospace;letter-spacing:.3em;text-align:center;margin:12px 0}
+.gr{display:grid;gap:5px;margin:8px auto;max-width:300px}
+.t{aspect-ratio:1;border-radius:8px;border:2px solid var(--bd);display:flex;align-items:center;justify-content:center;font:700 1.4rem system-ui;text-transform:uppercase;padding:0;background:var(--cd);color:var(--fg)}
+.t.g{background:var(--ok);color:#fff;border-color:var(--ok)}.t.y{background:var(--ye);color:#fff;border-color:var(--ye)}.t.x{background:#888;color:#fff;border-color:#888}
+.nv{grid-template-columns:repeat(6,1fr);max-width:320px}
+.nv .t{font-size:1.2rem}.nv .s{background:var(--ac);color:#fff}.nv .h{background:#d33;color:#fff}.nv .w{background:#9bd}
+.opt{display:block;width:100%;margin:8px 0;padding:14px;border-radius:12px;border:1.5px solid var(--bd);background:var(--cd);color:var(--fg);font:16px system-ui}
+.opt.on{border-color:var(--ac);background:var(--you)}
 </style>
 </head>
 <body>
-<div class="container">
-  <div class="heart">❤️</div>
-  <h1>Toi & Moi</h1>
-  <div class="subtitle">
-    Un petit monde qui n'appartient qu'à nous deux ✨
-  </div>
-  <div class="card">
-    <h2>💌 Un message pour toi</h2>
-    <button onclick="message()">
-      Ouvrir le message ❤️
-    </button>
-    <div id="message" class="message hidden">
-      Peu importe le nombre de personnes autour de nous,
-      certaines connexions restent simplement uniques. ❤️
-      <br><br>
-      Et celle-ci est la nôtre.
-    </div>
-  </div>
-  <div class="card">
-    <h2>🎮 Notre petit monde</h2>
-    <button onclick="comingSoon()">
-      Jouons ensemble 🎮
-    </button>
-    <button onclick="comingSoon()">
-      Quiz amoureux 💕
-    </button>
-    <button onclick="comingSoon()">
-      Notre espace secret 🔐
-    </button>
-  </div>
-  <div class="footer">
-    Créé spécialement pour Toi & Moi ❤️
-  </div>
+<header>Toi &amp; Moi ♥<div id="st">Non connecté</div></header>
+<main>
+<div class="p on" id="p-home">
+  <div class="cd c"><h3>Un petit monde rien qu’à nous deux</h3>
+  <input id="nom" placeholder="Ton prénom" maxlength="20">
+  <p><button class="b" id="mk">Créer un salon</button></p>
+  <p class="mut">ou rejoindre avec un code :</p>
+  <div class="row"><input id="cd" placeholder="Code du salon" maxlength="8"><button class="b o" id="jn">Rejoindre</button></div>
+  <div id="lk" class="mut"></div></div>
 </div>
+<div class="p" id="p-chat"><div class="msgs" id="msgs"></div>
+  <div class="row"><input id="tx" placeholder="Écris un message…" maxlength="500"><button class="b" id="send">Envoyer</button></div></div>
+<div class="p" id="p-pref"></div>
+<div class="p" id="p-pendu"></div>
+<div class="p" id="p-mot"></div>
+<div class="p" id="p-nav"></div>
+</main>
+<nav id="nav">
+  <button class="on" data-t="chat"><span>💬</span>Chat</button>
+  <button data-t="pref"><span>💕</span>Préfères</button>
+  <button data-t="pendu"><span>🔤</span>Pendu</button>
+  <button data-t="mot"><span>🟩</span>Mot</button>
+  <button data-t="nav"><span>🚢</span>Navale</button>
+</nav>
+<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <script>
-function message() {
-  document.getElementById("message").classList.toggle("hidden");
+var $=function(i){return document.getElementById(i)};
+var esc=function(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
+var peer,conn,seat=0,myName="",otherName="L’autre";
+var QS=[["la mer","la montagne"],["un film à la maison","une sortie au ciné"],["sucré","salé"],["voyager loin","rester chez nous"],["le matin","le soir"],["un câlin","un baiser"],["un dîner aux chandelles","un pique-nique"],["l’été","l’hiver"],["des messages toute la journée","des appels longs le soir"],["cuisiner ensemble","commander"],["danser","chanter"],["un chat","un chien"],["une surprise","un plan prévu"],["le café","le thé"],["un week-end nature","un week-end ville"]];
+
+/* Navigation */
+[].forEach.call(document.querySelectorAll("nav button"),function(b){b.onclick=function(){show(b.dataset.t)}});
+function show(t){[].forEach.call(document.querySelectorAll("nav button"),function(x){x.classList.toggle("on",x.dataset.t===t)});
+  [].forEach.call(document.querySelectorAll(".p"),function(p){p.classList.toggle("on",p.id==="p-"+t)})}
+function send(o){if(conn&&conn.open)conn.send(o)}
+
+/* Connexion */
+function code(){var a="abcdefghjkmnpqrstuvwxyz23456789",s="";for(var i=0;i<5;i++)s+=a[Math.floor(Math.random()*a.length)];return s}
+function link(c){return location.href.split("?")[0].split("#")[0]+"?salon="+c}
+function setup(c){conn=c;
+  c.on("open",function(){$("st").textContent="Connectés ♥";$("nav").style.display="flex";show("chat");send({t:"name",n:myName});renders()});
+  c.on("data",onData);
+  c.on("close",function(){$("st").textContent="Déconnecté — recharge la page";});
 }
-function comingSoon() {
-  alert("Cette partie arrive bientôt ❤️");
+function name(){myName=$("nom").value.trim()||"Moi"}
+$("mk").onclick=function(){name();var c=code();seat=0;$("st").textContent="Salon créé, en attente…";
+  peer=new Peer("tm-"+c);peer.on("connection",setup);peer.on("error",function(e){$("lk").textContent="Erreur : "+e.type});
+  var l=link(c);
+  $("lk").innerHTML="<p>Envoie ce lien à l’autre personne et reste sur cette page :</p><p><b>"+esc(l)+"</b></p><button class='b' id='sh'>Partager le lien</button>";
+  $("sh").onclick=function(){if(navigator.share)navigator.share({title:"Toi & Moi",url:l});else if(navigator.clipboard){navigator.clipboard.writeText(l);this.textContent="Lien copié ✓"}}};
+function join(c){name();seat=1;$("st").textContent="Connexion…";peer=new Peer();
+  peer.on("open",function(){setup(peer.connect("tm-"+c.toLowerCase().trim()))});
+  peer.on("error",function(e){$("st").textContent="Impossible de se connecter ("+e.type+"). Vérifie que l’autre est bien sur la page.";});}
+$("jn").onclick=function(){if($("cd").value)join($("cd").value)};
+var q=new URLSearchParams(location.search).get("salon");
+if(q){$("cd").value=q;$("jn").textContent="Rejoindre le salon";}
+
+function onData(d){
+  if(d.t==="name"){otherName=d.n||"L’autre";return}
+  if(d.t==="chat"){addMsg(otherName,d.x,false);return}
+  if(d.t==="pref"){P=d.s;rPref();return}
+  if(d.t==="w"){W[d.m]=d.s;rWord(d.m);return}
+  if(d.t==="nv")nvMsg(d);
 }
+function renders(){rPref();rWord("pendu");rWord("mot");rNv()}
+
+/* Chat */
+function addMsg(n,x,me){var m=document.createElement("div");m.className="m"+(me?" me":"");m.innerHTML="<small>"+esc(n)+"</small>"+esc(x);$("msgs").appendChild(m);m.scrollIntoView()}
+function sendChat(){var x=$("tx").value.trim();if(!x)return;$("tx").value="";addMsg(myName,x,true);send({t:"chat",x:x})}
+$("send").onclick=sendChat;$("tx").onkeydown=function(e){if(e.key==="Enter")sendChat()};
+
+/* Tu préfères */
+var P={i:0,a:[null,null]};
+function rPref(){var qq=QS[P.i],both=P.a[0]!==null&&P.a[1]!==null,h='<div class="cd c"><div class="mut">Tu préfères…</div>';
+  qq.forEach(function(o,k){var on=P.a[seat]===k;var who="";
+    if(both)who=" "+[0,1].filter(function(s){return P.a[s]===k}).map(function(s){return s===seat?"(moi)":"("+esc(otherName)+")"}).join(" ");
+    h+='<button class="opt'+(on?" on":"")+'" data-k="'+k+'">'+esc(o)+who+"</button>"});
+  h+='<p class="mut">'+(both?(P.a[0]===P.a[1]?"Vous êtes d’accord ♥":"Pas du même avis, discutez-en 😄"):(P.a[seat]!==null?"En attente de l’autre…":"Choisis !"))+'</p>';
+  h+='<button class="b" id="pn">Question suivante</button></div>';$("p-pref").innerHTML=h;
+  [].forEach.call($("p-pref").querySelectorAll(".opt"),function(b){b.onclick=function(){if(P.a[seat]!==null)return;P.a[seat]=+b.dataset.k;send({t:"pref",s:P});rPref()}});
+  $("pn").onclick=function(){P={i:Math.floor(Math.random()*QS.length),a:[null,null]};send({t:"pref",s:P});rPref()}}
+
+/* Pendu et Mot mystère */
+var W={pendu:{setter:0,word:"",g:[]},mot:{setter:0,word:"",g:[]}};
+function norm(s){return s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z]/g,"")}
+function up(m,s){W[m]=s;send({t:"w",m:m,s:s});rWord(m)}
+function rWord(m){var s=W[m],el=$("p-"+m),setter=s.setter===seat,len=m==="mot"?5:3,h='<div class="cd">';
+  h+='<div class="mut c">'+(m==="pendu"?"Pendu à deux":"Mot mystère (5 lettres)")+" · "+(setter?"tu choisis le mot":esc(otherName)+" choisit le mot")+"</div>";
+  if(!s.word){
+    if(setter)h+='<p class="c">Écris un mot'+(m==="mot"?" de 5 lettres":"")+' à faire deviner :</p><div class="row"><input id="w-'+m+'" placeholder="Ton mot secret" autocapitalize="off"><button class="b" id="ws-'+m+'">Valider</button></div>';
+    else h+='<p class="big mut">En attente du mot…</p>';
+  }else if(m==="pendu"){
+    var wrong=s.g.filter(function(l){return s.word.indexOf(l)<0}).length,shown=Array.from(s.word).map(function(c){return s.g.indexOf(c)>=0||wrong>=7?c:"_"}).join(" "),won=shown.indexOf("_")<0,lost=wrong>=7;
+    h+='<div class="wd">'+shown+'</div><p class="c">'+"♥".repeat(7-wrong)+"</p>";
+    if(won)h+='<p class="big">'+(setter?"Il/elle a trouvé 🎉":"Bravo, trouvé ! 🎉")+"</p>";else if(lost)h+='<p class="big">Perdu… le mot était « '+esc(s.word)+" »</p>";
+    else if(!setter){h+='<div class="kb">'+"abcdefghijklmnopqrstuvwxyz".split("").map(function(l){return'<button data-l="'+l+'"'+(s.g.indexOf(l)>=0?" disabled":"")+">"+l+"</button>"}).join("")+"</div>"}
+    else h+='<p class="c mut">Il/elle cherche…</p>';
+  }else{
+    var done=s.g.length&&s.g[s.g.length-1]===s.word,end=done||s.g.length>=6;
+    h+='<div class="gr" style="grid-template-columns:repeat(5,1fr)">';
+    for(var r=0;r<6;r++){var gw=s.g[r];for(var c=0;c<5;c++){h+='<div class="t'+(gw?" "+cl(gw,s.word)[c]:"")+'">'+(gw?gw[c]:"")+"</div>"}}
+    h+="</div>";
+    if(done)h+='<p class="big">Trouvé en '+s.g.length+" essai(s) 🎉</p>";else if(end)h+='<p class="big">Perdu… c’était « '+esc(s.word)+" »</p>";
+    else if(!setter)h+='<div class="row"><input id="gs" maxlength="5" placeholder="Ton essai (5 lettres)" autocapitalize="off"><button class="b" id="gg">OK</button></div>';
+    else h+='<p class="c mut">Il/elle cherche…</p>';
+  }
+  h+='<p class="c"><button class="b o" id="wr-'+m+'">Nouvelle manche (échanger les rôles)</button></p></div>';el.innerHTML=h;
+  var wv=$("ws-"+m);if(wv)wv.onclick=function(){var w=norm($("w-"+m).value);if(w.length<(m==="mot"?5:3)||(m==="mot"&&w.length!==5))return alert(m==="mot"?"Exactement 5 lettres":"Au moins 3 lettres");up(m,{setter:s.setter,word:w,g:[]})};
+  [].forEach.call(el.querySelectorAll(".kb button"),function(b){b.onclick=function(){up(m,{setter:s.setter,word:s.word,g:s.g.concat(b.dataset.l)})}});
+  var gg=$("gg");if(gg)gg.onclick=function(){var w=norm($("gs").value);if(w.length!==5)return alert("5 lettres");up(m,{setter:s.setter,word:s.word,g:s.g.concat(w)})};
+  $("wr-"+m).onclick=function(){up(m,{setter:1-s.setter,word:"",g:[]})}}
+function cl(g,w){var r=["x","x","x","x","x"],u=Array.from(w);
+  for(var i=0;i<5;i++)if(g[i]===w[i]){r[i]="g";u[i]=null}
+  for(i=0;i<5;i++)if(r[i]!=="g"){var k=u.indexOf(g[i]);if(k>=0){r[i]="y";u[k]=null}}return r}
+
+/* Bataille navale simplifiée : 6x6, 5 bateaux d'une case */
+var NV={ph:"place",my:[],ready:false,oready:false,turn:0,shots:{},got:{},hits:0,over:""};
+function rNv(){var h='<div class="cd c">',n=NV;
+  if(n.ph==="place"){h+='<p><b>Place tes 5 bateaux</b> ('+n.my.length+'/5)</p><div class="gr nv">'+cells(function(i){return n.my.indexOf(i)>=0?"s":""},"p")+"</div>";
+    if(n.my.length===5&&!n.ready)h+='<button class="b" id="rd">Je suis prêt</button>';
+    if(n.ready)h+='<p class="mut">En attente de l’autre…</p>'}
+  else{h+='<p><b>'+(n.over?n.over:(n.turn===seat?"À toi de tirer ! 🎯":"Au tour de l’autre…"))+'</b></p><p class="mut">Mer de l’autre (touchés : '+n.hits+"/5)</p><div class=\"gr nv\">"+cells(function(i){var s=n.shots[i];return s===undefined?"":s?"h":"w"},"s")+'</div><p class="mut">Ta flotte</p><div class="gr nv">'+cells(function(i){var g=n.got[i];return g?(n.my.indexOf(i)>=0?"h":"w"):(n.my.indexOf(i)>=0?"s":"")},"x")+"</div>"}
+  h+='<p><button class="b o" id="nr">Recommencer</button></p></div>';$("p-nav").innerHTML=h;
+  [].forEach.call($("p-nav").querySelectorAll("[data-p]"),function(b){b.onclick=function(){var i=+b.dataset.i,k=n.my.indexOf(i);if(n.ready)return;if(k>=0)n.my.splice(k,1);else if(n.my.length<5)n.my.push(i);rNv()}});
+  [].forEach.call($("p-nav").querySelectorAll("[data-s]"),function(b){b.onclick=function(){var i=+b.dataset.i;if(n.over||n.turn!==seat||n.shots[i]!==undefined)return;n.pend=i;send({t:"nv",k:"shot",i:i})}});
+  var rd=$("rd");if(rd)rd.onclick=function(){n.ready=true;send({t:"nv",k:"ready"});chk();rNv()};
+  $("nr").onclick=function(){send({t:"nv",k:"reset"});nvReset()}}
+function cells(f,t){var h="";for(var i=0;i<36;i++){var c=f(i);h+='<button class="t '+c+'" data-i="'+i+'" data-'+t+'="1">'+(c==="h"?"💥":c==="w"?"·":c==="s"?"⛵":"")+"</button>"}return h}
+function chk(){if(NV.ready&&NV.oready&&NV.ph==="place"){NV.ph="play";NV.turn=0;rNv()}}
+function nvReset(){NV={ph:"place",my:[],ready:false,oready:false,turn:0,shots:{},got:{},hits:0,over:""};rNv()}
+function nvMsg(d){var n=NV;
+  if(d.k==="ready"){n.oready=true;chk();rNv()}
+  else if(d.k==="reset")nvReset();
+  else if(d.k==="shot"){var hit=n.my.indexOf(d.i)>=0;n.got[d.i]=true;
+    var lost=n.my.filter(function(x){return n.got[x]}).length>=5;send({t:"nv",k:"res",i:d.i,hit:hit,lost:lost});n.turn=seat;if(lost)n.over="Perdu… 😢";rNv()}
+  else if(d.k==="res"){n.shots[d.i]=d.hit;if(d.hit)n.hits++;if(d.lost)n.over="Gagné ! 🎉";else n.turn=1-seat;rNv()}}
+rPref();rNv();
 </script>
 </body>
 </html>
